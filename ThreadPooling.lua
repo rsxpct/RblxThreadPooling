@@ -11,7 +11,40 @@
 			
 		HOW TO USE THIS MODULE:
 		
-			- Coming Soon
+			I recommending setting up a bindable event to do the following: (Server Sided)
+			
+			local ReplicatedStorage = game:GetService("ReplicatedStorage")
+			local ThreadPooling = require(ThreadPoolingModule)
+
+			local Threads = ThreadPooling.new(100, false) -- 100 = amount of threads to be created, recommended is 50-100
+
+			local Event = ReplicatedStorage.YourBindableEvent
+
+			Event.Event:Connect(function(Type, ...)
+				if Type == "ReleaseThread" then
+					local NewThread = Threads:ReleaseThread(...)
+					return NewThread
+				elseif Type == "GetThread" then
+					local NewThread = Threads:GetThread(...)
+					return NewThread
+				elseif Type == "GetDelayedThread" then
+					local NewThread = Threads:GetDelayedThread(...)
+					return NewThread
+				end
+			end)
+			
+			Then in any script just call:
+				
+				local Event = YourBindableEvent
+				
+				local Thread1 = Event:Fire("GetThread", function()
+					print("Hello!")
+				end)
+				
+				Event:Fire("ReleaseThread", Thread1)
+				
+			For delayed threads its pretty much the same! Just add a wait to make sure you don't
+			delete the thread before its actually used, or you will get an error!
 --]]
 
 local function assertwarn(Requirement: boolean, MessageIfNotMet: string)
